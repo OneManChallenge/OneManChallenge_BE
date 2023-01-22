@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public class CommonException extends RuntimeException {
-	private final CommonExceptionEnum msg;
+	private final CommonExceptionEnum errorEnum;
 
 	public CommonException(CommonExceptionEnum errorEnum) {
-		this.msg = errorEnum;
+		this.errorEnum = errorEnum;
 	}
 }

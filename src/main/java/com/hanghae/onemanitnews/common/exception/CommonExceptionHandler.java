@@ -20,7 +20,8 @@ public class CommonExceptionHandler {
 	/** Common 예외 핸들러 **/
 	@ExceptionHandler(value = {CommonException.class})
 	protected ResponseEntity<?> CommonExceptionHanlder(CommonException e) {
-		return new ResponseEntity<>(FailResponse.builder().msg(e.getMessage()).build(), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(FailResponse.builder().msg(e.getErrorEnum().getMsg()).build(),
+			HttpStatus.BAD_REQUEST);
 	}
 
 	/** Validation 예외처리 **/
