@@ -8,9 +8,9 @@ import lombok.Getter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 public class SuccessResponse<T> {
-	private String result;
-	private String msg;
-	private T data;
+	private final String result;
+	private final String msg;
+	private final T data;
 
 	@Builder
 	public SuccessResponse(String msg, T data) {

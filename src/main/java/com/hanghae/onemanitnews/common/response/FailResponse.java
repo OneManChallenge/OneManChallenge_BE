@@ -5,8 +5,8 @@ import lombok.Getter;
 
 @Getter
 public class FailResponse {
-	private String result;
-	private String msg;
+	private final String result;
+	private final String msg;
 
 	@Builder
 	public FailResponse(String msg) {
