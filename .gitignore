@@ -64,3 +64,6 @@ build/
 
 ### MySQL ###
 application-mysql.properties
+
+### ElasticSearch ###
+application-elasticsearch.properties
