@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -30,4 +31,10 @@ public class Member extends Timestamped {
 
 	@OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
 	private List<Subscribe> subscribe = new ArrayList<>();
+
+	@Builder
+	public Member(String email, String password) {
+		this.email = email;
+		this.password = password;
+	}
 }
