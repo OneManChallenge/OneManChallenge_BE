@@ -28,13 +28,13 @@ public class CommonExceptionHandler {
 	@ExceptionHandler(value = {MethodArgumentNotValidException.class})
 	protected ResponseEntity<?> ValidExceptionHandler(MethodArgumentNotValidException e) {
 		return new ResponseEntity<>(
-			FailResponse.builder().msg(e.getBindingResult().getFieldError().getDefaultMessage()),
+			FailResponse.builder().msg(e.getFieldError().getDefaultMessage()).build(),
 			HttpStatus.BAD_REQUEST);
 	}
 
 	/** todoContorller @Validated @PathVariable 예외처리 **/
 	@ExceptionHandler(value = {ConstraintViolationException.class})
-	protected ResponseEntity<?> ValidatedExceptionHandle(ConstraintViolationException e) {
+	protected ResponseEntity<?> ValidatedExceptionHandler(ConstraintViolationException e) {
 		return new ResponseEntity<>(
 			FailResponse.builder().msg(e.getConstraintViolations().iterator().next().getMessage()).build(),
 			HttpStatus.BAD_REQUEST);
