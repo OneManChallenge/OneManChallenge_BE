@@ -1,4 +1,4 @@
-package com.hanghae.onemanitnews.common.elasticsearch;
+package com.hanghae.onemanitnews.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
