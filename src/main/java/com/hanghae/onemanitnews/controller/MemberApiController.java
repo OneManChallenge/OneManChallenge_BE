@@ -1,5 +1,6 @@
 package com.hanghae.onemanitnews.controller;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hanghae.onemanitnews.common.response.SuccessResponse;
+import com.hanghae.onemanitnews.controller.request.LoginMemberRequest;
 import com.hanghae.onemanitnews.controller.request.SaveMemberRequest;
 import com.hanghae.onemanitnews.service.MemberService;
 
@@ -29,6 +31,27 @@ public class MemberApiController {
 
 		return new ResponseEntity<>(SuccessResponse.builder()
 			.msg("회원가입 성공")
+			.build(),
+			HttpStatus.OK);
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody @Valid LoginMemberRequest loginMemberRequest,
+		HttpServletResponse response) {
+		System.out.println("=========옴??");
+		memberService.login(loginMemberRequest, response);
+
+		return new ResponseEntity<>(SuccessResponse.builder()
+			.msg("로그인이 완료되었습니다.")
+			.build(),
+			HttpStatus.OK);
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<?> login() {
+
+		return new ResponseEntity<>(SuccessResponse.builder()
+			.msg("로그아웃 성공하였습니다.")
 			.build(),
 			HttpStatus.OK);
 	}
