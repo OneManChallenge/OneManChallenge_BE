@@ -34,7 +34,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 		FailResponse responseDto = FailResponse.builder()
 			.msg(CommonExceptionEnum.TOKEN_ENTRY_POINT_ERROR.getMsg())
 			.build();
-
+		
+		log.info(authenticationException.getMessage());
 		log.info("CustomAuthenticationEntryPoint 예외발생!");
 
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
