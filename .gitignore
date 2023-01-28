@@ -65,5 +65,11 @@ build/
 ### MySQL ###
 application-mysql.properties
 
+## ElasticSearch ###
+application-elasticsearch.properties
+
 ### JWT ###
 application-security.properties
+
+### Redis ###
+application-redis.properties
