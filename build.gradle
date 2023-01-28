@@ -46,6 +46,13 @@ dependencies {
     //ElasticSearch
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
     implementation 'jakarta.json:jakarta.json-api:2.0.1'
+
+    //Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    //Redis key 암호화용 해쉬(MurmurHash)
+    implementation 'com.google.guava:guava:29.0-jre'
+
 }
 
 tasks.named('test') {

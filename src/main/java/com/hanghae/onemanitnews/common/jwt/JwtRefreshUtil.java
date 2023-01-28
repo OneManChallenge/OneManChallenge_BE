@@ -1,4 +1,4 @@
-package com.hanghae.onemanitnews.common.security.jwt;
+package com.hanghae.onemanitnews.common.jwt;
 
 import java.security.Key;
 import java.util.Base64;
@@ -12,7 +12,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.hanghae.onemanitnews.common.security.MemberDetailsServiceImpl;
 import com.hanghae.onemanitnews.common.security.dto.MemberRoleEnum;
 
 import io.jsonwebtoken.Claims;
@@ -32,14 +31,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtRefreshUtil {
 
-	//스프링시큐리티 실습
-	private final MemberDetailsServiceImpl memberDetailsService;
-
 	//1. 토큰에 필요한 값
 	public static final String REFRESH_HEADER = "OneManToken";  // Header KEY 값(위에 스샷 참고.. 헤더 키값)
-	public static final String AUTHORIZATION_KEY = "refreshAuth";  // 사용자 권한 값의 KEY 값 – token안에 사용자 권한 식별용
-	private static final String ONEMAN_PREFIX = "Oneman ";  // Token 식별자 – 토큰 앞에 붙임
-	private static final long REFRESH_TOKEN_TIME = 30 * 60 * 1000L;  // 토큰 만료시간(30분)
+	public static final String REFRESH_AUTHORIZATION_KEY = "refreshAuth";  // 사용자 권한 값의 KEY 값 – token안에 사용자 권한 식별용
+	public static final String ONEMAN_PREFIX = "Oneman ";  // Token 식별자 – 토큰 앞에 붙임
+	public static final long REFRESH_TOKEN_TIME = 30 * 60 * 1000L;  // 토큰 만료시간(30분)
 
 	@Value("${jwt.secret.key.refresh}") //시크릿키 값 가져옴, auth.properties 참고
 	private String secretKeyRefresh;
@@ -70,7 +66,7 @@ public class JwtRefreshUtil {
 		return ONEMAN_PREFIX +  //Oneman 문자열 들어가는 부분
 			Jwts.builder()  //jwt 만들기ㄱㄱ
 				.setSubject(email)  //유저명 넣고
-				.claim(AUTHORIZATION_KEY, role)  //claim에는 사용자권한 값 넣고
+				.claim(REFRESH_AUTHORIZATION_KEY, role)  //claim에는 사용자권한 값 넣고
 				.setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME)) //여긴 토큰 유효기간 넣고, 1시간
 				.setIssuedAt(date)  //토큰이 언제 생성되었는지
 				.signWith(refreshKey, signatureAlgorithm)  //사용할 암호알고리즘 세팅

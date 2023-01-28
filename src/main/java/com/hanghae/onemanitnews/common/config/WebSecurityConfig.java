@@ -3,6 +3,7 @@ package com.hanghae.onemanitnews.common.config;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,10 +14,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.hanghae.onemanitnews.common.jwt.JwtAccessUtil;
+import com.hanghae.onemanitnews.common.jwt.JwtRefreshUtil;
+import com.hanghae.onemanitnews.common.redis.RedisAuthFilter;
+import com.hanghae.onemanitnews.common.redis.RedisTokenUtil;
 import com.hanghae.onemanitnews.common.security.CustomAuthenticationEntryPoint;
-import com.hanghae.onemanitnews.common.security.jwt.JwtAccessUtil;
-import com.hanghae.onemanitnews.common.security.jwt.JwtAuthFilter;
-import com.hanghae.onemanitnews.common.security.jwt.JwtRefreshUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +26,8 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @Configuration
 public class WebSecurityConfig {
+	private final RedisTokenUtil redisTokenUtil;
+	private final RedisTemplate<String, String> redisTemplate;
 	private final JwtAccessUtil jwtAccessUtil;
 	private final JwtRefreshUtil jwtRefreshUtil;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
@@ -57,13 +61,11 @@ public class WebSecurityConfig {
 			.antMatchers(HttpMethod.POST, "/api/v1/member/login").permitAll()
 			.anyRequest().authenticated(); //나머진 토큰 필요
 
-		// JWT Filter 등록 - UPAF필터보다 먼저 적용
-		http.addFilterBefore(new JwtAuthFilter(jwtAccessUtil, jwtRefreshUtil),
+		// Redis Auth Filter 등록 - UPAF필터보다 먼저 검사 진행
+		http.addFilterBefore(new RedisAuthFilter(redisTokenUtil, redisTemplate, jwtAccessUtil, jwtRefreshUtil),
 			UsernamePasswordAuthenticationFilter.class);
-		// http.addFilterBefore(new JwtExceptionHandlerFilter(), JwtAuthFilter.class);
 
-		// JWT Filter를 통과한 이후, 어떤 이유로 인해 토큰 만료 됐을 때 검증(ExceptionTranslationFilter)
-		// 401 Error, 인증 실패
+		// 401 Error, 인증 실패 - RedisAuthFilter 통과 후 SecurityContextHolder 인증객체 검증 실패 시 발생
 		http.exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint);
 
 		// 403 Error, 권한 오류
