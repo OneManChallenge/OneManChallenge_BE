@@ -30,7 +30,7 @@ public class MemberApiController {
 		memberService.signup(saveMemberRequest);
 
 		return new ResponseEntity<>(SuccessResponse.builder()
-			.msg("회원가입 성공")
+			.msg("회원가입 성공하였습니다.")
 			.build(),
 			HttpStatus.OK);
 	}
@@ -38,7 +38,7 @@ public class MemberApiController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody @Valid LoginMemberRequest loginMemberRequest,
 		HttpServletResponse response) {
-		System.out.println("=========옴??");
+
 		memberService.login(loginMemberRequest, response);
 
 		return new ResponseEntity<>(SuccessResponse.builder()

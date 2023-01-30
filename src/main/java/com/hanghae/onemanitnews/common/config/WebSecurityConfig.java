@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsUtils;
 
 import com.hanghae.onemanitnews.common.jwt.JwtAccessUtil;
 import com.hanghae.onemanitnews.common.jwt.JwtRefreshUtil;
@@ -57,6 +58,7 @@ public class WebSecurityConfig {
 		// .authorizeRequests() : 요청에 대한 권한을 지정
 		http.authorizeRequests()
 			//.antMatchers(HttpMethod.GET, "/api/v1/news/list").permitAll()
+			.requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 			.antMatchers(HttpMethod.POST, "/api/v1/member/signup").permitAll()
 			.antMatchers(HttpMethod.POST, "/api/v1/member/login").permitAll()
 			.anyRequest().authenticated(); //나머진 토큰 필요
