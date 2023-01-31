@@ -1,10 +1,13 @@
 package com.hanghae.onemanitnews.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,7 +51,8 @@ public class MemberApiController {
 	}
 
 	@PostMapping("/logout")
-	public ResponseEntity<?> login() {
+	public ResponseEntity<?> login(@AuthenticationPrincipal UserDetails userDetails, HttpServletRequest request) {
+		memberService.logout(userDetails, request);
 
 		return new ResponseEntity<>(SuccessResponse.builder()
 			.msg("로그아웃 성공하였습니다.")
