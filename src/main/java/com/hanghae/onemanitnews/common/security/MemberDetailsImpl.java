@@ -13,7 +13,6 @@ import com.hanghae.onemanitnews.entity.Member;
 public class MemberDetailsImpl implements UserDetails {
 	private final Member member; //인증 완료된 Member 객체
 	private final String email; //인증 완료된 Member email
-
 	private final String password; //인증 완료된 Member email
 
 	//생성자
@@ -42,13 +41,9 @@ public class MemberDetailsImpl implements UserDetails {
 		return authorities;
 	}
 
-	public String getEmail() {
-		return this.email;
-	}
-
 	@Override
 	public String getUsername() {
-		return null;
+		return this.email;
 	}
 
 	@Override

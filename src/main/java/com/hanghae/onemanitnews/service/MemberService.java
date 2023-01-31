@@ -2,10 +2,12 @@ package com.hanghae.onemanitnews.service;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,5 +114,22 @@ public class MemberService {
 		ValueOperations<String, String> vop = redisTemplate.opsForValue();
 		vop.set(accessHash, "available", jwtAccessUtil.ACCESS_TOKEN_TIME, TimeUnit.MILLISECONDS);
 		vop.set(refreshHash, "available", jwtRefreshUtil.REFRESH_TOKEN_TIME, TimeUnit.MILLISECONDS);
+	}
+
+	@Transactional
+	public void logout(UserDetails userDetails, HttpServletRequest request) {
+		//1. 헤더에서 토큰 가져오기
+		String accessToken = redisTokenUtil.getHeaderAccessToken(request);
+		String refreshToken = redisTokenUtil.getHeaderRefreshToken(request);
+
+		//2. Redis key 삭제를 위한 hash 암호화(MurmurHash)
+		String emailHash = redisTokenUtil.createRedisHash(userDetails.getUsername(), RedisHashEnum.EMAIL);
+		String accessHash = redisTokenUtil.createRedisHash(accessToken, RedisHashEnum.ACCESS_TOKEN);
+		String refreshHash = redisTokenUtil.createRedisHash(refreshToken, RedisHashEnum.REFRESH_TOKEN);
+
+		//3. Redis Key 삭제
+		redisTemplate.delete(emailHash);
+		redisTemplate.delete(accessHash);
+		redisTemplate.delete(refreshHash);
 	}
 }
