@@ -57,7 +57,7 @@ public class MemberService {
 
 		//4. 회원가입
 		try {
-			memberRepository.save(member);
+			memberRepository.last_increment_id(member.getEmail(), encryptPassword);
 		} catch (Exception e) {
 			throw new CommonException(CommonExceptionEnum.MEMBER_SIGNUP_FAILED);
 		}
