@@ -13,6 +13,8 @@ public enum CommonExceptionEnum {
 	MEMBER_SIGNUP_FAILED("회원가입 실패하였습니다."),
 	INCORRECT_PASSWORD("비밀번호가 일치하지 않습니다."),
 
+	NODE_JS_COUNT_FAIL("Node.js 서버 Error!!"),
+
 	/* JWT 예외 메시지 */
 	TOKEN_ENTRY_POINT_ERROR("유효하지 않은 토큰입니다."),
 	TOKEN_DO_FILTER_INTERNAL_ERROR("토큰 검증 과정에서 오류가 있습니다."),

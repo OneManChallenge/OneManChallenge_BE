@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.hanghae.onemanitnews.common.exception.CommonException;
+import com.hanghae.onemanitnews.common.exception.CommonExceptionEnum;
 import com.hanghae.onemanitnews.common.response.SuccessResponse;
 import com.hanghae.onemanitnews.controller.request.LoginMemberRequest;
 import com.hanghae.onemanitnews.controller.request.SaveMemberRequest;
@@ -30,7 +33,11 @@ public class MemberApiController {
 	@PostMapping("/signup")
 	public ResponseEntity<?> signup(@RequestBody @Valid SaveMemberRequest saveMemberRequest) {
 
-		memberService.signup(saveMemberRequest);
+		try {
+			memberService.signup(saveMemberRequest);
+		} catch (JsonProcessingException e) {
+			throw new CommonException(CommonExceptionEnum.MEMBER_SIGNUP_FAILED);
+		}
 
 		return new ResponseEntity<>(SuccessResponse.builder()
 			.msg("회원가입 성공하였습니다.")
