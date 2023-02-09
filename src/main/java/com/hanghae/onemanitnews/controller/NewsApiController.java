@@ -4,6 +4,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 
 import org.hibernate.validator.constraints.Range;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hanghae.onemanitnews.common.response.SuccessResponse;
-import com.hanghae.onemanitnews.service.NewsService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class NewsApiController {
 
-	private final NewsService newsService;
-	
 	//1. 뉴스 검색 기능 - 페이징 + Valid
 	@GetMapping("/list")
 	public ResponseEntity<?> getNewsList(
@@ -36,7 +34,6 @@ public class NewsApiController {
 
 		return new ResponseEntity<>(SuccessResponse.builder()
 			.msg("뉴스검색 성공")
-			.data(newsService.getNewsList(category, search, page - 1))
 			.build(),
 			HttpStatus.OK);
 	}
