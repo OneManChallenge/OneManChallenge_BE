@@ -34,27 +34,14 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-//    //Spring Security
-//    implementation 'org.springframework.boot:spring-boot-starter-security'
-//    testImplementation 'org.springframework.security:spring-security-test'
-//
-//    //JWT
-//    compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
-//    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
-//    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
-//
-//    //ElasticSearch
-//    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-//    implementation 'jakarta.json:jakarta.json-api:2.0.1'
-//
-//    //Redis
-//    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-//
-//    //Redis key 암호화용 해쉬(MurmurHash)
-//    implementation 'com.google.guava:guava:29.0-jre'
+//애찯ㄱㅇ
 
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+jar {
+    enabled = false
 }
