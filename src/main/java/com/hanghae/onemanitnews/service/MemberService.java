@@ -55,7 +55,7 @@ public class MemberService {
 	@Transactional
 	@Lock(LockModeType.PESSIMISTIC_READ)
 	public void signup(SaveMemberRequest saveMemberRequest) throws JsonProcessingException {
-		//1. 중복 가입 유무 체
+		//1. 중복 가입 유무 체크
 		Boolean isEmail = memberRepository.existsByEmail(saveMemberRequest.getEmail());
 
 		if (isEmail == true) {
