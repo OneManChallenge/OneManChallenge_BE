@@ -1,17 +1,29 @@
 package com.hanghae.onemanitnews.service;
 
+import static com.hanghae.onemanitnews.common.exception.CommonExceptionEnum.*;
+
 import java.util.concurrent.TimeUnit;
 
+import javax.persistence.LockModeType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae.onemanitnews.common.exception.CommonException;
 import com.hanghae.onemanitnews.common.exception.CommonExceptionEnum;
 import com.hanghae.onemanitnews.common.jwt.JwtAccessUtil;
@@ -41,7 +53,8 @@ public class MemberService {
 	private final RedisTokenUtil redisTokenUtil;
 
 	@Transactional
-	public void signup(SaveMemberRequest saveMemberRequest) {
+	@Lock(LockModeType.PESSIMISTIC_READ)
+	public void signup(SaveMemberRequest saveMemberRequest) throws JsonProcessingException {
 		//1. 중복 가입 유무 체크
 		Boolean isEmail = memberRepository.existsByEmail(saveMemberRequest.getEmail());
 
@@ -52,15 +65,35 @@ public class MemberService {
 		//2. 비밀번호 암호화
 		String encryptPassword = passwordEncoder.encode(saveMemberRequest.getPassword());
 
-		//3. Dto -> Entity
+		//3. member_id 최대값 조회(Node.js)
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+		RestTemplate rt = new RestTemplate();
+
+		ResponseEntity<String> response = rt.exchange(
+			"http://172.30.1.1:3000/api/v1/member/count",
+			HttpMethod.POST,
+			requestEntity,
+			String.class
+		);
+
+		String responseBody = response.getBody();
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonNode = objectMapper.readTree(responseBody);
+
+		if (jsonNode.get("result").asText().equals("fail")) {
+			throw new CommonException(NODE_JS_COUNT_FAIL);
+		}
+
+		//4. Dto -> Entity
 		Member member = memberMapper.toEntity(saveMemberRequest.getEmail(), encryptPassword);
 
-		//4. 회원가입
-		try {
-			memberRepository.save(member);
-		} catch (Exception e) {
-			throw new CommonException(CommonExceptionEnum.MEMBER_SIGNUP_FAILED);
-		}
+		//5. 회원가입
+		memberRepository.save(member);
 	}
 
 	@Transactional(readOnly = true)
