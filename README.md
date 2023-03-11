@@ -102,7 +102,7 @@
 - 휘발성 data 처리를 위한 방법으로 Memory I/O 활용 인지
 - 단순 빠른 처리가 아닌 ```의존도 감소```를 통한 성능 개선 경험(1기능 1역할, 부하 분산 등)
 - - -
-### 4. Node.js Single Thread를 활용한 동시성 제어
+### 3-4. Node.js Single Thread를 활용한 동시성 제어
 #### 구현 이유
 1) Mysql Auto_increment 설정 후 ```Data 저장 실패 시```, Auto_increment 값이 ```Rollback 되지 않아``` 순서보장 안 되는 점 확인
 ![image](https://user-images.githubusercontent.com/31820402/224504145-3d015db0-c2ba-44b1-8014-bde94b9d3ead.png)
