@@ -48,11 +48,11 @@
 - Logstash statement
 
 ```statement => "SELECT *, UNIX_TIMESTAMP(modification_date) AS unix_ts_in_secs FROM news WHERE (UNIX_TIMESTAMP(modification_date) > :sql_last_value AND modification_date < NOW()) ORDER BY modification_date ASC"```
-- 해석
-> - WHERE (UNIX_TIMESTAMP(modification_date) > :sql_last_value 
->> - 현재 저장된 수정일자 > 마지막 수정일자(:sql_last_value)
-> -  AND modification_date < NOW()) 
->> - 현재 저장된 수정일자 < 현재시간(NOW())
+#### 해석
+- WHERE (UNIX_TIMESTAMP(modification_date) > :sql_last_value 
+> 현재 저장된 수정일자 > 마지막 수정일자(:sql_last_value)
+-  AND modification_date < NOW()) 
+> 현재 저장된 수정일자 < 현재시간(NOW())
 - 즉, ```현재 저장되어 있는 수정일자```를 참고하여
 -  마지막 수정일자 < ```Logstash 수집 대상``` < 현재시간
 
@@ -61,6 +61,9 @@
 - 키워드와 PK를 매핑시켜 빠른 검색을 가능하게 하는 ```역색인``` 기능 체감
 - Logstach를 활용한 Mysql DB 동기화 과정을 통해 ```촘촘한 동기화```의 필요성 인지
 - ```경로정보```를 ```주기적```으로 주고받아 ```빠른 경로```를 탐색하는 ```네트워크 라우팅 프로토콜```을 떠오르게 함
+
+- 10초간 처리량 비교(ElasticSearch VS Mysql)
+![image](https://user-images.githubusercontent.com/31820402/224504446-5e40d8d8-aad8-4adf-85ec-0a98f643476d.png)
 
 - - -
 ### 3-3. Redis 토큰 관리
@@ -94,8 +97,24 @@
 > - DB Table에 토큰정보가 있다면 로그인, 인증, 로그아웃 할 때 SQL문이 발생 가능하며, DB서버로 트래픽 증가할 것으로 봄
 > - 그래서 토큰 인증 관련한 캐시 역할을 하는 존재가 필요하다고 판단
 
-느낀점
+#### 느낀점
 - 영구적이지 않지만, 서비스 운영에 반드시 필요한 JWT 관리의 새로운 방법 습득
 - 휘발성 data 처리를 위한 방법으로 Memory I/O 활용 인지
 - 단순 빠른 처리가 아닌 ```의존도 감소```를 통한 성능 개선 경험(1기능 1역할, 부하 분산 등)
+- - -
+### 4. Node.js Single Thread를 활용한 동시성 제어
+#### 구현 이유
+1) Mysql Auto_increment 설정 후 ```Data 저장 실패 시```, Auto_increment 값이 ```Rollback 되지 않아``` 순서보장 안 되는 점 확인
+![image](https://user-images.githubusercontent.com/31820402/224504145-3d015db0-c2ba-44b1-8014-bde94b9d3ead.png)
+2) Redis 대신 Node.js의 ```Single Thread``` 특징을 활용하여 순서보장을 하고, 동시성 제어를 경험하고자 진행
 
+![image](https://user-images.githubusercontent.com/31820402/224503859-7692a59f-63af-4406-9ac3-0f936579c0f9.png)
+- node.js 코드
+
+![image](https://user-images.githubusercontent.com/31820402/224504233-0059c4b9-fe29-4180-88ea-2bf202fb3b16.png)
+
+#### 느낀점
+- 동시성 제어를 위해 ```공간```이라는 특징을 활용
+- 순서없이 동시 다발적으로 들어오는 요청을 ```병목현상```처럼 하나의 영역에서 순서대로 처리하는 방법을 체감
+- ```공간```과 ```Single Thread```의 특징을 활용한 성능 개선을 경험
+- ```대량의 패킷```들을 메시지 ```Queue```로 순서대로 처리하는 ```네트워크```와 비슷하여 신기했음
