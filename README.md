@@ -34,6 +34,32 @@
 - 실제 구현해보니 Binary log 내용 안의 sql문을 실행시키며 동기화 진행
 - 과거 학습했던 Oracle Redo Log File과 흡사한 방식으로 진행되는 공통점 발견
 - 이를 통해 Disk I/O와 ```Memory I/O```에 대한 인지와 성능 개선을 위해 ```Cache``` 사용 이유를 체감 
-- 하지만 이런 장점을 악용한 ```Memory 해킹```에 대한 위협도 인지
+- 하지만 이런 장점을 악용한 ```Memory 해킹```에 대한 위협 인지
+
+- - -
+### 3-2. ElasticSearch를 활용한 검색속도 향상
+#### 구현 이유
+1) ```row data의 증가```에 따른 ```Mysql 조회 성능 저하``` 발생
+2) 검색 성능 개선에서 항상 언급된 기능으로 도전욕구 자극
+3) DB와 ElasticSearch 조회 성능을 비교 및 체감하고자 진행
+
+![image](https://user-images.githubusercontent.com/31820402/224475727-81c98752-dc6f-43bc-9361-5045ae761a08.png)
+
+- Logstash statement
+
+```statement => "SELECT *, UNIX_TIMESTAMP(modification_date) AS unix_ts_in_secs FROM news WHERE (UNIX_TIMESTAMP(modification_date) > :sql_last_value AND modification_date < NOW()) ORDER BY modification_date ASC"```
+- 해석
+> - WHERE (UNIX_TIMESTAMP(modification_date) > :sql_last_value 
+>> - 현재 저장된 수정일자 > 마지막 수정일자(:sql_last_value)
+> -  AND modification_date < NOW()) 
+>> - 현재 저장된 수정일자 < 현재시간(NOW())
+- 즉, ```현재 저장되어 있는 수정일자```를 참고하여
+-  마지막 수정일자 < ```Logstash 수집 대상``` < 현재시간
+
+#### 느낌점
+- 성능 개선을 위한 다양한 ```Indexing``` 방법들이 있다는 것을 인지
+- 키워드와 PK를 매핑시켜 빠른 검색을 가능하게 하는 ```역색인``` 기능 체감
+- Logstach를 활용한 Mysql DB 동기화 과정을 통해 ```촘촘한 동기화```의 필요성 인지
+- ```경로정보```를 ```주기적```으로 주고받아 ```빠른 경로```를 탐색하는 ```네트워크 라우팅 프로토콜```을 떠오르게 함
 
 - - -
